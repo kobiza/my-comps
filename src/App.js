@@ -1,23 +1,19 @@
-import logo from './logo.svg';
 import './App.css';
+import {useState} from 'react'
+import ListInput1 from "./ListInput1";
+
+// const items = [
+//   {id: 'item-1', value: 'אחד שתים שלוש'},
+//   {id: 'item-2', value: 'ארבע חמש שש'},
+//   {id: 'item-3', value: 'שבע שמונה תשע'},
+// ]
 
 function App() {
+  const [items, setItems] = useState([])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ListInput1 items={items} setItems={setItems} placeholders={['ערך א', 'ערך ב', 'ערך ג']}/>
     </div>
   );
 }

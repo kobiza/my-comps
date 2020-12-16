@@ -21,3 +21,28 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+### Operating systems ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+### Regular dev ###
+node_modules
+npm-debug.log
+.idea
+.vscode
+*.iml
+
+### webpack bundle ###
+dist
+
+### react-templates generated file ###
+*.rt.js
+*.json.jssd
+
+.eslintcache
