@@ -1,0 +1,9 @@
+.App {
+  direction: rtl;
+}
+
+li {
+  text-align: right;
+}
+
+

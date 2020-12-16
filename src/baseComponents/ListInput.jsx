@@ -1,3 +1,4 @@
+import './ListInput.css'
 import {useState, useRef, createRef, useMemo, useCallback} from 'react'
 
 const s4 = () => (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -22,7 +23,7 @@ const focusPrevOnLastDelete = (inputsRefs, index) => (e) => {
     return e
 }
 
-const ListInput1 = (props) => {
+const ListInput = (props) => {
     const { placeholders, items, setItems } = props
     const [valuesToAdd, setValuesToAdd] = useState(['', '', ''])
 
@@ -96,4 +97,4 @@ const ListInput1 = (props) => {
     )
 }
 
-export default ListInput1;
+export default ListInput;
