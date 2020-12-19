@@ -14,13 +14,13 @@ function TransitionSample1() {
         'exit-active': -1,
     })
     // const prevIndex = usePrevious(currentIndex)
-    const prevIndexRef = useRef();
-    console.log('------ render ------')
-    useEffect(() => {
-        console.log('------ useEffect ------')
-        prevIndexRef.current = currentIndex;
-    });
-    const prevIndex = prevIndexRef.current;
+    // const prevIndexRef = useRef();
+    // console.log('------ render ------')
+    // useEffect(() => {
+    //     console.log('------ useEffect ------')
+    //     prevIndexRef.current = currentIndex;
+    // });
+    // const prevIndex = prevIndexRef.current;
 
     const items = [
         {bg: '#2ecc71', title: 'slide 1'},
@@ -32,10 +32,12 @@ function TransitionSample1() {
 
     const itemComps = items.map(({bg, title}, index) => {
         const isEnter = index === transitionFlags['enter'];
-        const isExit = index === transitionFlags['enter'];
+        const isExit = index === transitionFlags['exit'];
         const isEntering = index === transitionFlags['enter-active'];
-        const isExiting = index === transitionFlags['exit-active'];
-        const shouldShow = index === currentIndex || isEntering || isExiting
+        // const isExiting = index === transitionFlags['exit-active'];
+        const isDone = currentIndex && !isEnter
+        // const isBeforeEntering = currentIndex && isEnter && !isEntering
+        const shouldShow = index === isDone || isEntering || isExit
 
         return (
             <div key={`item-${index}`} className={classnames({item: true, hide: !shouldShow, enter: isEnter, exit: isExit})} style={{backgroundColor: bg}}><h1>{title}</h1></div>
@@ -43,31 +45,24 @@ function TransitionSample1() {
     })
 
     const nextSlide = () => {
-        setCurrentIndex(currentIndex < items.length - 1 ? currentIndex + 1 : 0)
-    }
-
-    const startTransition = ({enterIndex, exitIndex}) => {
-        // setTransitionFlags({
-        //     ...transitionFlags,
-        //     enter: enterIndex,
-        //     exit: exitIndex,
-        // })
-
+        const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0
+        setCurrentIndex(nextIndex)
         setTransitionFlags({
-            ...transitionFlags,
-            'enter-active': enterIndex,
-            'exit-active': exitIndex,
+            enter: nextIndex,
+            exit: currentIndex,
+            'enter-active': -1,
+            'exit-active': -1,
         })
     }
 
-    if (!isUndefined(prevIndex) && prevIndex !== currentIndex) {
-        startTransition({enterIndex: currentIndex, exitIndex: prevIndex})
-    }
+    // if (!isUndefined(prevIndex) && prevIndex !== currentIndex) {
+    //     startTransition({enterIndex: currentIndex, exitIndex: prevIndex})
+    // }
 
     return (
         <div>
-            <h1>{`prev: ${prevIndex}, curr: ${currentIndex}`}</h1>
-            <h1>{`flags: ${transitionFlags.enter}, ${transitionFlags.exit}, ${transitionFlags['enter-active']}, ${transitionFlags["exit-active"]}`}</h1>
+            {/*<h1>{`prev: ${prevIndex}, curr: ${currentIndex}`}</h1>*/}
+            {/*<h1>{`flags: ${transitionFlags.enter}, ${transitionFlags.exit}, ${transitionFlags['enter-active']}, ${transitionFlags["exit-active"]}`}</h1>*/}
             <div className="items-container">
                 {itemComps}
             </div>
