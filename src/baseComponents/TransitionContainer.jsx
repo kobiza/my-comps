@@ -3,28 +3,9 @@ import './TransitionContainer.css'
 import {useRef, useEffect, Children, cloneElement} from 'react';
 import classnames from 'classnames'
 
-// const ITEM_STATUSES = {
-//     idle: 'idle',
-//     show: 'show',
-//     beforeTransitionIn: 'beforeTransitionIn',
-//     onTransitionIn: 'onTransitionIn',
-//     beforeTransitionOut: 'beforeTransitionOut',
-//     onTransitionOut: 'onTransitionOut',
-// }
-//
-// const getNewItemsStatus = (itemsStatus, prevIndex, nexIndex) => {
-//
-// }
-
-// const getClassesToApply = (nextItemsStatus, prevItemsStatus) => {
-//     const allClasses
-//
-// }
-
 const isUndefined = (value) => typeof value === 'undefined'
 
-
-function TransitionContainer({children, index, rootClassName, transitionDuration}) {
+function TransitionContainer({children, index, rootClassName, transitionDuration, onTransitionEnd}) {
     const itemsRefs = useRef({})
     useEffect(() => {
         itemsRefs.current[0].classList.add("current");
@@ -32,7 +13,6 @@ function TransitionContainer({children, index, rootClassName, transitionDuration
 
     const prevIndexRef = useRef();
     useEffect(() => {
-        console.log('---useEffect---')
         prevIndexRef.current = index;
     });
     const prevIndex = prevIndexRef.current;
@@ -47,8 +27,6 @@ function TransitionContainer({children, index, rootClassName, transitionDuration
     }
 
     const startTransition = ({enter, exit}) => {
-        forceReflow(itemsRefs.current[exit])
-
         itemsRefs.current[exit].classList.add("exitActive");
         itemsRefs.current[enter].classList.add("enterActive");
     }
@@ -64,10 +42,12 @@ function TransitionContainer({children, index, rootClassName, transitionDuration
 
     const transition = ({enter, exit}) => {
         prepareTransition({enter, exit})
+        forceReflow(itemsRefs.current[exit])
         startTransition({enter, exit})
 
         setTimeout(() => {
             endTransition({enter, exit})
+            onTransitionEnd()
         }, transitionDuration)
     }
 

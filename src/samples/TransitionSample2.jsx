@@ -1,10 +1,11 @@
 import './TransitionSample2.css';
-import {useState} from 'react';
+import {useState, useRef} from 'react';
 import classnames from 'classnames'
 import TransitionContainer from '../baseComponents/TransitionContainer'
 
 function TransitionSample1() {
     const [index, setIndex] = useState(0)
+    const inTransition = useRef(false)
 
     const items = [
         {bg: '#2ecc71', title: 'slide 1'},
@@ -21,12 +22,19 @@ function TransitionSample1() {
     })
 
     const next1 = () => {
-        setIndex(index < items.length - 1 ? index + 1 : 0)
+        if (!inTransition.current) {
+            inTransition.current = true;
+            setIndex(index < items.length - 1 ? index + 1 : 0)
+        }
+    }
+
+    const onTransitionEnd = () => {
+        inTransition.current = false;
     }
 
     return (
         <div>
-            <TransitionContainer index={index} rootClassName="items-container" transitionDuration={3000}>
+            <TransitionContainer index={index} rootClassName="items-container" transitionDuration={3000} onTransitionEnd={onTransitionEnd}>
                 {itemComps}
             </TransitionContainer>
             <input type="button" value="next" onClick={next1}/>
