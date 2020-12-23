@@ -2,15 +2,22 @@ import './TransitionSample1.css';
 import {useState, useRef, useEffect} from 'react';
 import classnames from 'classnames'
 
+const ITEM_STATUSES = {
+    idle: 'idle',
+    show: 'show',
+    beforeTransitionIn: 'beforeTransitionIn',
+    onTransitionIn: 'onTransitionIn',
+    beforeTransitionOut: 'beforeTransitionOut',
+    onTransitionOut: 'onTransitionOut',
+}
+
+// const getClassesToApply = (nextItemsStatus, prevItemsStatus) => {
+//     const allClasses
+//
+// }
 
 function TransitionSample1() {
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const [transitionFlags, setTransitionFlags] = useState({
-        enter: -1,
-        'enterActive': -1,
-        exit: -1,
-        'exitActive': -1,
-    })
+    const currentIndexRef = useRef(0)
 
     // 0 - current
 
@@ -33,19 +40,15 @@ function TransitionSample1() {
         {bg: '#f1c40f', title: 'slide 5'},
     ];
 
+    const itemsStatus = [
+        ITEM_STATUSES.show,
+        ...Array(items.length - 1).fill(ITEM_STATUSES.idle)
+    ]
+
     const itemsRefs = useRef({})
     const setRef = index => e => itemsRefs.current[index] = e
 
     const itemComps = items.map(({bg, title}, index) => {
-        // const enter = index === transitionFlags.enter;
-        // const exit = index === transitionFlags.exit;
-        // const enterActive = index === transitionFlags.enterActive;
-        // const exitActive = index === transitionFlags.exitActive;
-        // // const isExiting = index === transitionFlags['exitActive'];
-        // const isDone = index === currentIndex && !enter
-        // // const isBeforeEntering = currentIndex && isEnter && !isEntering
-        // const shouldShow = isDone || enterActive || exit
-
         return (
             <div key={`item-${index}`} ref={setRef(index)} className={classnames({item: true})} style={{backgroundColor: bg}}><h1>{title}</h1></div>
         )
@@ -55,70 +58,42 @@ function TransitionSample1() {
         itemsRefs.current[0].classList.add("current");
     }, [])
 
-    const prevIndex = useRef(-1)
-    useEffect(() => {
-        if (prevIndex.current !== -1) {
-            const prev = prevIndex.current
-            setTimeout(() => {
-                console.log(`prev ${prev} current ${currentIndex}`)
-                itemsRefs.current[prev].classList.remove("exit");
-                itemsRefs.current[prev].classList.remove("exitActive");
-                itemsRefs.current[prev].classList.remove("current");
-                itemsRefs.current[currentIndex].classList.remove("enter");
-                itemsRefs.current[currentIndex].classList.remove("enterActive");
-                itemsRefs.current[currentIndex].classList.add("current");
-            }, 3000)
-        }
-
-        prevIndex.current = currentIndex
-    }, [currentIndex])
-
-    const nextSlide1 = () => {
-        const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0
-        setCurrentIndex(nextIndex)
-        setTransitionFlags({
-            enter: nextIndex,
-            exit: currentIndex,
-            enterActive: -1,
-            exitActive: -1,
-        })
+    const forceReflow = (element) => {
+        const scrollTop = element.scrollTop
     }
 
-    const nextSlide2 = () => {
-        setTransitionFlags({
-            enter: transitionFlags.enter,
-            exit: transitionFlags.exit,
-            enterActive: transitionFlags.enter,
-            exitActive: transitionFlags.exit,
-        })
+    const prepareTransition = ({enter, exit}) => {
+        itemsRefs.current[exit].classList.add("exit");
+        itemsRefs.current[enter].classList.add("enter");
     }
 
-    const end = () => {
-        setTransitionFlags({
-            enter: -1,
-            exit: -1,
-            enterActive: -1,
-            exitActive: -1,
-        })
+    const startTransition = ({enter, exit}) => {
+        forceReflow(itemsRefs.current[exit])
+
+        itemsRefs.current[exit].classList.add("exitActive");
+        itemsRefs.current[enter].classList.add("enterActive");
+    }
+
+    const endTransition = ({enter, exit}) => {
+        itemsRefs.current[exit].classList.remove("exit");
+        itemsRefs.current[exit].classList.remove("exitActive");
+        itemsRefs.current[exit].classList.remove("current");
+        itemsRefs.current[enter].classList.remove("enter");
+        itemsRefs.current[enter].classList.remove("enterActive");
+        itemsRefs.current[enter].classList.add("current");
     }
 
     const next1 = () => {
-        const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0
-        itemsRefs.current[currentIndex].classList.add("exit");
-        itemsRefs.current[nextIndex].classList.add("enter");
+        const exit = currentIndexRef.current
+        const enter = currentIndexRef.current < items.length - 1 ? currentIndexRef.current + 1 : 0
+        currentIndexRef.current = enter
 
-        const scrollTop = itemsRefs.current[currentIndex].scrollTop
-        itemsRefs.current[currentIndex].classList.add("exitActive");
-        itemsRefs.current[nextIndex].classList.add("enterActive");
+        prepareTransition({enter, exit})
+        startTransition({enter, exit})
 
-        setCurrentIndex(nextIndex)
-        // setCurrentIndex(nextIndex) // should observe to currentIndex changed and only then start changing classes
-        // setTransitionFlags({
-        //     enter: -1,
-        //     exit: -1,
-        //     enterActive: -1,
-        //     exitActive: -1,
-        // })
+        setTimeout(() => {
+            endTransition({enter, exit})
+        }, 3000)
     }
 
     return (

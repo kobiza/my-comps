@@ -1,0 +1,34 @@
+.items-container {
+  position: relative;
+  width: 500px;
+  height: 300px;
+  overflow: hidden;
+
+  --transition-duration: 3000ms;
+}
+
+.item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.item.enter {
+  transform: translateX(100%);
+}
+
+.item.enterActive {
+  transform: translateX(0);
+  transition: transform var(--transition-duration) cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.item.exit {
+  transform: translateX(0);
+}
+
+.item.exitActive {
+  transform: translateX(-100%);
+  transition: transform var(--transition-duration) cubic-bezier(0.87, 0, 0.13, 1);
+}
